@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+func GetSpotifyAuth(w http.ResponseWriter, r *http.Request) {
 	var spotifyAuth SpotifyAuth
 
 	if spotifyAuth.getKey() == true {

@@ -130,3 +130,8 @@ func (spot SpotifyAuth) setRedis(value string) bool {
 
 	return false
 }
+
+// empty handler function for vercel compile
+func Handler(w http.ResponseWriter, r *http.Request) {
+
+}
