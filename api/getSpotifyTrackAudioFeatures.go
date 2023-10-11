@@ -27,7 +27,7 @@ func GetSpotifyTrackAudioFeatures(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		req, err := http.NewRequest("GET", "https://api.spotify.com/v1/audio-features/"+requestJson.TrackId, nil)
+		req, err := http.NewRequest(http.MethodGet, "https://api.spotify.com/v1/audio-features/"+requestJson.TrackId, nil)
 
 		req.Header.Add("Authorization", "Bearer "+spotifyAuth.Key)
 		resp, err := client.Do(req)
