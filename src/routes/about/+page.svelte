@@ -6,9 +6,14 @@
 <script lang="ts">
   import { popup, type PopupSettings } from "@skeletonlabs/skeleton";
 
-  const popupFocusBlur: PopupSettings = {
+  const popupFocusBlur1: PopupSettings = {
     event: "focus-blur",
-    target: "popupFocusBlur",
+    target: "popupFocusBlur1",
+    placement: "right"
+  };
+  const popupFocusBlur2: PopupSettings = {
+    event: "focus-blur",
+    target: "popupFocusBlur2",
     placement: "right"
   };
 
@@ -58,16 +63,16 @@
     <label class="label">
       <span class="">Song Name </span>
       <input class="input mt-0" bind:value={song} type="text" placeholder={"Summer ('til the end)"} required
-             oninvalid="this.setCustomValidity('At least one song is required')" use:popup={popupFocusBlur} />
-      <div class="card p-3 variant-filled text-sm mr-10" data-popup="popupFocusBlur">
+             oninvalid="this.setCustomValidity('At least one song is required')" use:popup={popupFocusBlur1} />
+      <div class="card p-3 variant-filled text-sm mr-10" data-popup="popupFocusBlur1">
         <p>Input multiple songs separated by a comma ie: Hello,Get Low</p>
         <div class="arrow variant-filled" />
       </div>
     </label>
     <label class="label mt-2">
       <span>Artists</span>
-      <input class="input mt-0" bind:value={artists} type="text" placeholder={"ESKM"} use:popup={popupFocusBlur} />
-      <div class="card p-3 variant-filled text-sm" data-popup="popupFocusBlur">
+      <input class="input mt-0" bind:value={artists} type="text" placeholder={"ESKM"} use:popup={popupFocusBlur2} />
+      <div class="card p-3 variant-filled text-sm" data-popup="popupFocusBlur2">
         <p>Input multiple artists separated by a comma ie: ESKM,C.SWAG</p>
         <div class="arrow variant-filled" />
       </div>
