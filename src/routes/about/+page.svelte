@@ -4,8 +4,16 @@
 </svelte:head>
 
 <script lang="ts">
-  import { popup, type PopupSettings } from "@skeletonlabs/skeleton";
+  import type { ModalSettings, PopupSettings } from "@skeletonlabs/skeleton";
+  import { getModalStore, popup } from "@skeletonlabs/skeleton";
+  import modalComp from "../../components/songDetailsModal.svelte";
+  import { loader } from "../../components/loadingOverlay";
+  import { writable } from "svelte/store";
 
+  // loading overlay control
+  let loading = writable(false);
+
+  // Input info popups
   const popupFocusBlur1: PopupSettings = {
     event: "focus-blur",
     target: "popupFocusBlur1",
@@ -17,52 +25,101 @@
     placement: "right"
   };
 
-  let song = "";
+  // handling for song search
+  let songs = "";
   let artists = "";
   let error = false;
-  let trackInfo = {};
+  let spotifyTracks = {};
   let tableReady = false;
 
-  async function getTrackInfo() {
-    if (song.length === 0) {
+  async function getSpotifySearch() {
+    if (songs.length === 0) {
       return;
     } else {
-      const params = new URLSearchParams({ "q": `track:${song}` }).toString();
-      return await fetch(`${window.location.origin}/api/getSpotifySearch?${params}`, {
-        method: "GET"
+      return await fetch(`${window.location.origin}/api/getSpotifySearch`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          "track_name": songs,
+          "artist_name": artists,
+          "market": "US",
+        })
       }).then(response => response.json()
       ).then(data => {
         tableReady = true;
-        console.log(data.tracks.items[0]);
         return data.tracks.items;
-      });
+      }).catch(error => {
+      })
     }
   }
 
   function handleSubmit() {
-    if (song.length === 0 && artists.length === 0) {
+    if (songs.length === 0 && artists.length === 0) {
       //handle error state
       error = true;
     } else {
       error = false;
-      trackInfo = getTrackInfo();
+      spotifyTracks = getSpotifySearch();
     }
   }
 
-  function handleTableClick(event) {
-    console.log(event);
+
+  const modalStore = getModalStore();
+  const modalComponent: ModalComponent = { ref: modalComp };
+
+  async function getSpotifyTrackAudioFeatures(trackName: string, trackId: string) {
+    return await fetch(`${window.location.origin}/api/getSpotifyTrackAudioFeatures`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "track_id": trackId
+      })
+    }).then(response => response.json()
+    ).then(data => {
+      const trackAudioFeatures = {
+        "danceability": Math.round(data.danceability * 10000) / 100,
+        "energy": Math.round(data.energy * 10000) / 100,
+        "key": data.key,
+        "loudness": Math.round(data.loudness * 100) / 100 + " db",
+        "mode": data.mode,
+        "speechiness": Math.round(data.speechiness * 10000) / 100,
+        "acousticness": Math.round(data.acousticness * 10000) / 100,
+        "instrumentalness": Math.round(data.instrumentalness * 10000) / 100,
+        "liveness": Math.round(data.liveness * 10000) / 100,
+        "valence": data.valence,
+        "tempo": Math.round(data.tempo) + " bpm",
+        "duration": new Date(data.duration_ms).toISOString().slice(11, 19) + (" (hh:mm:ss)"),
+        "time_signature": data.time_signature
+      };
+      const modal: ModalSettings = {
+        type: "component",
+        component: modalComponent,
+        body: { trackName, trackAudioFeatures }
+      };
+      loading.update(() => false);
+      modalStore.trigger(modal);
+    });
+  }
+
+  function handleTableClick(trackName: string, trackId: string) {
+    loading.update(() => true);
+    getSpotifyTrackAudioFeatures(trackName, trackId);
   }
 
 
 </script>
 
-<div class="space-y-10 w-9/12 m-6 text-left flex flex-col grow items-center">
+<div class="space-y-10 w-11/12 m-6 text-left flex flex-col grow items-center" use:loader={loading}>
   <h1 class="h1">Hidden Song Info Search</h1>
 
   <form class="w-9/12" on:submit|preventDefault={handleSubmit}>
     <label class="label">
       <span class="">Song Name </span>
-      <input class="input mt-0" bind:value={song} type="text" placeholder={"Summer ('til the end)"} required
+      <input class="input mt-0" bind:value={songs} type="text" placeholder={"Summer ('til the end)"} required
              oninvalid="this.setCustomValidity('At least one song is required')" use:popup={popupFocusBlur1} />
       <div class="card p-3 variant-filled text-sm mr-10" data-popup="popupFocusBlur1">
         <p>Input multiple songs separated by a comma ie: Hello,Get Low</p>
@@ -85,7 +142,7 @@
     </button>
   </form>
 
-  {#await trackInfo}
+  {#await spotifyTracks}
     <div role="status">
       <svg aria-hidden="true" class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -100,19 +157,20 @@
     </div>
   {:then tracks}
     {#if tableReady}
-      <div class="table-container w-9/12">
+      <div class="table-container w-11/12">
         <table class="table table-interactive" role="grid">
           <thead class="table-head ">
           <tr>
-            <th class="w-60"></th>
+            <th class="w-60">Album Art</th>
             <th class="">Track Name</th>
             <th class="">Artist</th>
           </tr>
           </thead>
           <tbody class="table-body ">
           {#each Object.values(tracks) as track}
-            <tr on:click={() => handleTableClick(track.id)}>
-              <td><img class="object-scale-down" src={track.album.images[0].url} alt={"Album art for: " + track.album.name}></td>
+            <tr on:click={() => handleTableClick(track.name, track.id)}>
+              <td><img class="object-scale-down" src={track.album.images[0].url}
+                       alt={"Album art for: " + track.album.name}></td>
               <td>{track.name}</td>
               <td>
                 {#if track.artists.length > 1}
@@ -123,18 +181,9 @@
                 {:else}
                   {track.artists[0].name}
                 {/if}
-
-
               </td>
             </tr>
           {/each}
-
-          <!--        <tr aria-rowindex="1">-->
-          <!--          <td class="" role="gridcell" aria-colindex="1" tabindex="0"><img-->
-          <!--            src="https://i.scdn.co/image/ab67616d0000b273e787cffec20aa2a396a61647/"></td>-->
-          <!--          <td class="" role="gridcell" aria-colindex="2" tabindex="-1">1BxfuPKGuaTgP7aM0Bbdwr</td>-->
-          <!--          <td class="" role="gridcell" aria-colindex="3" tabindex="-1">Cruel Summer</td>-->
-          <!--        </tr>-->
           </tbody>
         </table>
       </div>
