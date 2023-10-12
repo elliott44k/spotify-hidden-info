@@ -129,3 +129,7 @@ func (spot *SpotifyAuth) setRedis(value string) bool {
 
 	return false
 }
+
+func Handler(w http.ResponseWriter, r *http.Request) {
+	//handler function required for vercel compile
+}

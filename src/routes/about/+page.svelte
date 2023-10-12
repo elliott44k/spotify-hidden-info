@@ -1,26 +1,145 @@
 <svelte:head>
-	<title>About</title>
-	<meta name="description" content="About this app" />
+  <title>About</title>
+  <meta name="description" content="About this app" />
 </svelte:head>
 
-<div class="text-column">
-	<h1>About this app</h1>
+<script lang="ts">
+  import { popup, type PopupSettings } from "@skeletonlabs/skeleton";
 
-	<p>
-		This is a <a href="https://kit.svelte.dev">SvelteKit</a> app. You can make your own by typing the
-		following into your command line and following the prompts:
-	</p>
+  const popupFocusBlur: PopupSettings = {
+    event: "focus-blur",
+    target: "popupFocusBlur",
+    placement: "right"
+  };
 
-	<pre>npm create svelte@latest</pre>
+  let song = "";
+  let artists = "";
+  let error = false;
+  let trackInfo = {};
+  let tableReady = false;
 
-	<p>
-		The page you're looking at is purely static HTML, with no client-side interactivity needed.
-		Because of that, we don't need to load any JavaScript. Try viewing the page's source, or opening
-		the devtools network panel and reloading.
-	</p>
+  async function getTrackInfo() {
+    if (song.length === 0) {
+      return;
+    } else {
+      const params = new URLSearchParams({ "q": `track:${song}` }).toString();
+      return await fetch(`${window.location.origin}/api/getSpotifySearch?${params}`, {
+        method: "GET"
+      }).then(response => response.json()
+      ).then(data => {
+        tableReady = true;
+        console.log(data.tracks.items[0]);
+        return data.tracks.items;
+      });
+    }
+  }
 
-	<p>
-		The <a href="/sverdle">Sverdle</a> page illustrates SvelteKit's data loading and form handling. Try
-		using it with JavaScript disabled!
-	</p>
+  function handleSubmit() {
+    if (song.length === 0 && artists.length === 0) {
+      //handle error state
+      error = true;
+    } else {
+      error = false;
+      trackInfo = getTrackInfo();
+    }
+  }
+
+  function handleTableClick(event) {
+    console.log(event);
+  }
+
+
+</script>
+
+<div class="space-y-10 w-9/12 m-6 text-left flex flex-col grow items-center">
+  <h1 class="h1">Hidden Song Info Search</h1>
+
+  <form class="w-9/12" on:submit|preventDefault={handleSubmit}>
+    <label class="label">
+      <span class="">Song Name </span>
+      <input class="input mt-0" bind:value={song} type="text" placeholder={"Summer ('til the end)"} required
+             oninvalid="this.setCustomValidity('At least one song is required')" use:popup={popupFocusBlur} />
+      <div class="card p-3 variant-filled text-sm mr-10" data-popup="popupFocusBlur">
+        <p>Input multiple songs separated by a comma ie: Hello,Get Low</p>
+        <div class="arrow variant-filled" />
+      </div>
+    </label>
+    <label class="label mt-2">
+      <span>Artists</span>
+      <input class="input mt-0" bind:value={artists} type="text" placeholder={"ESKM"} use:popup={popupFocusBlur} />
+      <div class="card p-3 variant-filled text-sm" data-popup="popupFocusBlur">
+        <p>Input multiple artists separated by a comma ie: ESKM,C.SWAG</p>
+        <div class="arrow variant-filled" />
+      </div>
+    </label>
+    {#if error}
+      <p class="text-red-500">Please enter a song name</p>
+    {/if}
+    <button class="btn variant-filled mt-4" type="submit">
+      Search
+    </button>
+  </form>
+
+  {#await trackInfo}
+    <div role="status">
+      <svg aria-hidden="true" class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+           viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+          fill="currentColor" />
+        <path
+          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+          fill="currentFill" />
+      </svg>
+      <span class="sr-only">Loading...</span>
+    </div>
+  {:then tracks}
+    {#if tableReady}
+      <div class="table-container w-9/12">
+        <table class="table table-interactive" role="grid">
+          <thead class="table-head ">
+          <tr>
+            <th class="w-60"></th>
+            <th class="">Track Name</th>
+            <th class="">Artist</th>
+          </tr>
+          </thead>
+          <tbody class="table-body ">
+          {#each Object.values(tracks) as track}
+            <tr on:click={() => handleTableClick(track.id)}>
+              <td><img class="object-scale-down" src={track.album.images[0].url} alt={"Album art for: " + track.album.name}></td>
+              <td>{track.name}</td>
+              <td>
+                {#if track.artists.length > 1}
+                  {track.artists.shift().name}
+                  {#each track.artists as artist}
+                    {"| " + artist.name + " "}
+                  {/each}
+                {:else}
+                  {track.artists[0].name}
+                {/if}
+
+
+              </td>
+            </tr>
+          {/each}
+
+          <!--        <tr aria-rowindex="1">-->
+          <!--          <td class="" role="gridcell" aria-colindex="1" tabindex="0"><img-->
+          <!--            src="https://i.scdn.co/image/ab67616d0000b273e787cffec20aa2a396a61647/"></td>-->
+          <!--          <td class="" role="gridcell" aria-colindex="2" tabindex="-1">1BxfuPKGuaTgP7aM0Bbdwr</td>-->
+          <!--          <td class="" role="gridcell" aria-colindex="3" tabindex="-1">Cruel Summer</td>-->
+          <!--        </tr>-->
+          </tbody>
+        </table>
+      </div>
+    {/if}
+  {:catch error}
+    <p style="color: red">{error.message}</p>
+  {/await}
 </div>
+
+
+<!--<div class="w-9/12">-->
+<!--  <Spotify spotifyLink="track/3xh41S4f3xUo4o4Ag8Mpx7" height="200px" width="100%" />-->
+<!--</div>-->
