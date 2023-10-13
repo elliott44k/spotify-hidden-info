@@ -4,30 +4,31 @@
 
   // Stores
   import { getModalStore } from "@skeletonlabs/skeleton";
-  import { Spotify } from "sveltekit-embed";
 
   const modalStore = getModalStore();
 
   // Base Classes
   const cBase = "card p-4 w-modal shadow-xl space-y-4";
+  const cHeader = "text-2xl font-bold";
 
   const bodyData: bodyObject | null = $modalStore[0].body ? JSON.parse($modalStore[0].body) as unknown as bodyObject : null;
 
   interface bodyObject {
-    trackName: string;
-    trackId: string;
-    trackAudioFeatures: {
+    artistName: string;
+    artistDetails: {
       [key: string]: string;
     };
   }
+
+  console.log(bodyData)
 </script>
 
 <!-- @component This example creates a simple form modal. -->
 
 {#if bodyData}
   <div class={cBase}>
-    <div class="-mb-10">
-      <Spotify spotifyLink="track/{bodyData.trackId}" height="200px" width="100%" />
+    <div class:cHeader>
+      {bodyData.artistName}
     </div>
     <div class="table-container">
       <table class="table table-interactive" role="grid">
@@ -38,11 +39,11 @@
         </tr>
         </thead>
         <tbody class="table-body ">
-        {#each Object.keys(bodyData.trackAudioFeatures) as tableKey}
+        {#each Object.keys(bodyData.artistDetails) as tableKey}
           <tr>
             <td>{tableKey}</td>
             <td>
-              {bodyData.trackAudioFeatures[tableKey]}
+              {bodyData.artistDetails[tableKey]}
             </td>
           </tr>
         {/each}

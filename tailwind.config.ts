@@ -8,6 +8,14 @@ export default {
 	darkMode: 'class',
 	content: ['./src/**/*.{html,js,svelte,ts}', join(require.resolve('@skeletonlabs/skeleton'), '../**/*.{html,js,svelte,ts}')],
 	theme: {
+		maxWidth: {
+			'1/3': '33%',
+			'1/2': '50%',
+		},
+		minWidth: {
+			'1/3': '33%',
+			'1/2': '50%',
+		},
 		extend: {},
 	},
 	plugins: [

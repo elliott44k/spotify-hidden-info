@@ -19,6 +19,7 @@ func GetSpotifySearch(w http.ResponseWriter, r *http.Request) {
 		type RequestJson struct {
 			TrackName   string `json:"track_name"`
 			ArtistsName string `json:"artist_name"`
+			Type        string `json:"type"`
 			Market      string `json:"market"`
 		}
 
@@ -29,7 +30,7 @@ func GetSpotifySearch(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		if requestJson.TrackName == "" {
+		if requestJson.TrackName == "" && requestJson.ArtistsName == "" {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -38,14 +39,17 @@ func GetSpotifySearch(w http.ResponseWriter, r *http.Request) {
 		if requestJson.Market == "" {
 			requestJson.Market = "US"
 		}
+		qString := ""
 
-		qString := "track:" + requestJson.TrackName
+		if requestJson.TrackName != "" {
+			qString += "track:" + requestJson.TrackName
+		}
 
 		if requestJson.ArtistsName != "" {
 			qString += " artist:" + requestJson.ArtistsName
 		}
 		query.Add("q", qString)
-		query.Add("type", "track")
+		query.Add("type", requestJson.Type)
 		query.Add("market", requestJson.Market)
 
 		req, err := http.NewRequest(http.MethodGet, "https://api.spotify.com/v1/search/", nil)

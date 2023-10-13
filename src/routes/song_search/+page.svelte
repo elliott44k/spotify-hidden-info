@@ -1,10 +1,10 @@
 <svelte:head>
-  <title>About</title>
-  <meta name="description" content="About this app" />
+  <title>Spotify Hidden Info Search</title>
+  <meta name="description" content="Find hidden info about your favorite songs on Spotify" />
 </svelte:head>
 
 <script lang="ts">
-  import type { ModalSettings, PopupSettings } from "@skeletonlabs/skeleton";
+  import type { ModalComponent, ModalSettings, PopupSettings } from "@skeletonlabs/skeleton";
   import { getModalStore, popup } from "@skeletonlabs/skeleton";
   import modalComp from "../../components/songDetailsModal.svelte";
   import { loader } from "../../components/loadingOverlay";
@@ -44,14 +44,15 @@
         body: JSON.stringify({
           "track_name": songs,
           "artist_name": artists,
-          "market": "US",
+          "type": "track",
+          "market": "US"
         })
       }).then(response => response.json()
       ).then(data => {
         tableReady = true;
         return data.tracks.items;
       }).catch(error => {
-      })
+      });
     }
   }
 
@@ -98,7 +99,7 @@
       const modal: ModalSettings = {
         type: "component",
         component: modalComponent,
-        body: { trackName, trackAudioFeatures }
+        body: JSON.stringify({ trackName, trackId, trackAudioFeatures })
       };
       loading.update(() => false);
       modalStore.trigger(modal);
@@ -119,7 +120,7 @@
   <form class="w-9/12" on:submit|preventDefault={handleSubmit}>
     <label class="label">
       <span class="">Song Name </span>
-      <input class="input mt-0" bind:value={songs} type="text" placeholder={"Summer ('til the end)"} required
+      <input class="input mt-0" bind:value={songs} type="text" placeholder={"Summer ('til the end)"}
              oninvalid="this.setCustomValidity('At least one song is required')" use:popup={popupFocusBlur1} />
       <div class="card p-3 variant-filled text-sm mr-10" data-popup="popupFocusBlur1">
         <p>Input multiple songs separated by a comma ie: Hello,Get Low</p>
@@ -166,7 +167,7 @@
             <th class="">Artist</th>
           </tr>
           </thead>
-          <tbody class="table-body ">
+          <tbody class="table-body">
           {#each Object.values(tracks) as track}
             <tr on:click={() => handleTableClick(track.name, track.id)}>
               <td><img class="object-scale-down" src={track.album.images[0].url}
@@ -192,8 +193,3 @@
     <p style="color: red">{error.message}</p>
   {/await}
 </div>
-
-
-<!--<div class="w-9/12">-->
-<!--  <Spotify spotifyLink="track/3xh41S4f3xUo4o4Ag8Mpx7" height="200px" width="100%" />-->
-<!--</div>-->

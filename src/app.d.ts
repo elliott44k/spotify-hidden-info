@@ -1,5 +1,5 @@
 // See https://kit.svelte.dev/docs/types#app
-// for information about these interfaces
+// for information song_search these interfaces
 declare global {
 	namespace App {
 		// interface Error {}
