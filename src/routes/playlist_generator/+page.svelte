@@ -247,7 +247,7 @@
                   <input type="text" bind:value={tracks} placeholder="trackID1,trackID2">
                 </div>
                 <div class="input-group grid-cols-[auto_1fr_auto]">
-                  <div class="input-group-shim truncate">Recs Max</div>
+                  <div class="input-group-shim truncate">Max Recs</div>
                   <input class="input text-left w-auto" bind:value={limit} min="1" max="100" type="number" step="1" />
                   <div class="input-group-divider" style="padding-left: 0px">1-100</div>
                 </div>
