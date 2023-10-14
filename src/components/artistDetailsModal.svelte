@@ -20,7 +20,7 @@
     };
   }
 
-  console.log(bodyData)
+  console.log(bodyData);
 </script>
 
 <!-- @component This example creates a simple form modal. -->
@@ -28,7 +28,7 @@
 {#if bodyData}
   <div class={cBase}>
     <div class:cHeader>
-      {bodyData.artistName}
+      <h2 class="h2">{bodyData.artistName}</h2>
     </div>
     <div class="table-container">
       <table class="table table-interactive" role="grid">
