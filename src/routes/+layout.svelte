@@ -14,10 +14,12 @@
   <svelte:fragment slot="header">
     <AppBar gridColumns="grid-cols-3" slotDefault="place-self-center" slotTrail="place-content-end">
       <svelte:fragment slot="lead">
-        <a href="/">Home</a>
-        <a href="/song_search">Song Search</a>
-        <a href="/playlist_generator">Playlist Generator</a>
-        <a href="/artist_id_search">Artist ID Lookup</a>
+        <div class="place-content-start flex-nowrap">
+          <a class="inline-block btn btn-md px-1" href="/">Home</a>
+          <a class="inline-block btn btn-md px-1" href="/song_search">Song Search</a>
+          <a class="inline-block btn btn-md px-1" href="/playlist_generator">Playlist Generator</a>
+          <a class="inline-block btn btn-md px-1" href="/artist_id_search">Artist ID Lookup</a>
+        </div>
       </svelte:fragment>
       <h1 class="h3">Spotify Hidden Info Search</h1>
       <svelte:fragment slot="trail">Designed and Coded by: Elliott Kim</svelte:fragment>
