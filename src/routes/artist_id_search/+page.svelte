@@ -98,7 +98,7 @@
 </script>
 
 <div class="space-y-10 w-11/12 m-6 text-left flex flex-col grow items-center" use:loader={loading}>
-  <h1 class="h1">Hidden Song Info Search</h1>
+  <h1 class="h1">Artist ID Search</h1>
 
   <form class="w-9/12" on:submit|preventDefault={handleSubmit}>
     <label class="label mt-2">
