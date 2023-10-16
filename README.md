@@ -2,6 +2,8 @@
 
 This is a simple app that uses the Spotify API to get Spotify's song analysis as well as generate song recommendations based on user input. It uses the [Spotify](https://developer.spotify.com/) REST API and iFrame Embed.
 
+Play with the app here (https://spotify-hidden-info.vercel.app/)
+
 ## Built with
 Svelte - Frontend framework
 
