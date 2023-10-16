@@ -32,6 +32,7 @@
   let spotifyTracks = {};
   let tableReady = false;
 
+  // spotify api call for track search
   async function getSpotifySearch() {
     if (songs.length === 0) {
       return;
@@ -56,6 +57,7 @@
     }
   }
 
+  // form submit handler
   function handleSubmit() {
     if (songs.length === 0 && artists.length === 0) {
       //handle error state
@@ -66,10 +68,11 @@
     }
   }
 
-
+  // modal control
   const modalStore = getModalStore();
   const modalComponent: ModalComponent = { ref: modalComp };
 
+  // spotify api call for track audio features
   async function getSpotifyTrackAudioFeatures(trackName: string, trackId: string) {
     return await fetch(`${window.location.origin}/api/getSpotifyTrackAudioFeatures`, {
       method: "POST",
@@ -106,12 +109,11 @@
     });
   }
 
+  // handle table row click
   function handleTableClick(trackName: string, trackId: string) {
     loading.update(() => true);
     getSpotifyTrackAudioFeatures(trackName, trackId);
   }
-
-
 </script>
 
 <div class="space-y-10 w-11/12 m-6 text-left flex flex-col grow items-center" use:loader={loading}>

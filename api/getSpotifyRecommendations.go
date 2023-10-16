@@ -18,6 +18,7 @@ func GetSpotifyRecommendations(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("fuck")
 	var spotifyAuth common.SpotifyAuth
 
+	//get spotify auth key
 	if spotifyAuth.GetKey() == true {
 		client := http.Client{}
 		query := r.URL.Query()

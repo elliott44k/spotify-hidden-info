@@ -1,3 +1,4 @@
+// Loading overlay with spinner
 import Spinner from './loadingSpinner.svelte';
 
 export const loader = (node: any, loading: { subscribe: (arg0: (loading: any) => void) => any }) => {

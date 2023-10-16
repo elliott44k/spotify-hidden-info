@@ -15,6 +15,7 @@ import (
 func GetSpotifyTrackAudioFeatures(w http.ResponseWriter, r *http.Request) {
 	var spotifyAuth common.SpotifyAuth
 
+	//get spotify auth key
 	if spotifyAuth.GetKey() == true {
 		client := http.Client{}
 
@@ -31,6 +32,13 @@ func GetSpotifyTrackAudioFeatures(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Request most include a track id
+		if requestJson.TrackId == "" {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		// Spotify endpoint request format: https://api.spotify.com/v1/audio-features/{id}
 		req, err := http.NewRequest(http.MethodGet, "https://api.spotify.com/v1/audio-features/"+requestJson.TrackId, nil)
 
 		req.Header.Add("Authorization", "Bearer "+spotifyAuth.Key)

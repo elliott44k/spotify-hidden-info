@@ -15,6 +15,7 @@ import (
 func GetSpotifyArtist(w http.ResponseWriter, r *http.Request) {
 	var spotifyAuth common.SpotifyAuth
 
+	//get spotify auth key
 	if spotifyAuth.GetKey() == true {
 		client := http.Client{}
 

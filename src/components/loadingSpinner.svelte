@@ -1,3 +1,4 @@
+<!--Spinner for loading overlay-->
 <script>
   import { fade } from 'svelte/transition'
 </script>

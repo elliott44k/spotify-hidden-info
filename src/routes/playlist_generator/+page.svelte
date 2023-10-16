@@ -1,19 +1,17 @@
 <svelte:head>
   <title>Spotify Hidden Info Search</title>
-  <meta name="description" content="Find hidden info about your favorite songs on Spotify" />
+  <meta name="description" content="Find song recommendations from Spotify based on your selections" />
 </svelte:head>
 
 <script lang="ts">
-  import type { ModalComponent } from "@skeletonlabs/skeleton";
   import { Accordion, AccordionItem, getModalStore } from "@skeletonlabs/skeleton";
-  import modalComp from "../../components/songDetailsModal.svelte";
   import { loader } from "../../components/loadingOverlay";
   import { writable } from "svelte/store";
 
   // loading overlay control
   let loading = writable(false);
 
-  // handling for song search
+  // handling for spotify api request
   let artists = "";
   let genres = "";
   let tracks = "";
@@ -22,6 +20,7 @@
   let spotifyTracks = {};
   let tableReady = false;
 
+  // spotify api call for similar song recommendations
   async function getSpotifyRecommendations() {
     return await fetch(`${window.location.origin}/api/getSpotifyRecommendations`, {
       method: "POST",
@@ -75,13 +74,13 @@
     }).then(response => response.json()
     ).then(data => {
       tableReady = true;
-      console.log(data);
       return data.tracks;
     }).catch(error => {
-      console.log(error);
+      return error;
     });
   }
 
+  // form submit handler
   function handleSubmit() {
     //data validation
     if (tracks.length === 0 && genres.length === 0 && artists.length === 0) {
@@ -217,10 +216,6 @@
   let minSpeechiness: number, maxSpeechiness: number, targetSpeechiness: number;
   let minPopularity: number, maxPopularity: number, targetPopularity: number;
   let minLoudness: number, maxLoudness: number, targetLoudness: number;
-
-  const modalStore = getModalStore();
-  const modalComponent: ModalComponent = { ref: modalComp };
-
 </script>
 
 <div class="space-y-10 w-11/12 m-6 text-left flex flex-col grow items-center" use:loader={loading}>

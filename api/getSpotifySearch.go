@@ -15,6 +15,7 @@ import (
 func GetSpotifySearch(w http.ResponseWriter, r *http.Request) {
 	var spotifyAuth common.SpotifyAuth
 
+	//get spotify auth key
 	if spotifyAuth.GetKey() == true {
 		client := http.Client{}
 		query := r.URL.Query()
@@ -34,6 +35,8 @@ func GetSpotifySearch(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+
+		// Request most include a track name or an artist name
 		if requestJson.TrackName == "" && requestJson.ArtistsName == "" {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -43,8 +46,9 @@ func GetSpotifySearch(w http.ResponseWriter, r *http.Request) {
 		if requestJson.Market == "" {
 			requestJson.Market = "US"
 		}
-		qString := ""
 
+		// Spotify endpoint uses unique "q" request parameter contains a lot of the search filters
+		qString := ""
 		if requestJson.TrackName != "" {
 			qString += "track:" + requestJson.TrackName
 		}

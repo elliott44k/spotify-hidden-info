@@ -1,6 +1,6 @@
 <svelte:head>
   <title>Spotify Hidden Info Search</title>
-  <meta name="description" content="Find hidden info about your favorite songs on Spotify" />
+  <meta name="description" content="Find info about your favorite artists on Spotify" />
 </svelte:head>
 
 <script lang="ts">
@@ -19,6 +19,7 @@
   let spotifyArtists = {};
   let tableReady = false;
 
+  // spotify api search call
   async function getSpotifySearch() {
     if (artist.length === 0) {
       return;
@@ -42,10 +43,12 @@
         });
         return sortedArtists;
       }).catch(error => {
+        return error;
       });
     }
   }
 
+  // form submit handler
   function handleSubmit() {
     if (artist.length === 0) {
       //handle error state
@@ -56,10 +59,11 @@
     }
   }
 
-
+  // modal control
   const modalStore = getModalStore();
   const modalComponent: ModalComponent = { ref: modalComp };
 
+  // spotify api call for artist details
   async function getSpotifyArtist(artistId: string) {
     return await fetch(`${window.location.origin}/api/getSpotifyArtist`, {
       method: "POST",
@@ -77,8 +81,6 @@
         "genres": data.genres,
         "popularity": data.popularity
       };
-      console.log(data);
-      console.log(artistDetails);
       const modal: ModalSettings = {
         type: "component",
         component: modalComponent,
@@ -89,12 +91,11 @@
     });
   }
 
+  // table row click handler
   function handleTableClick(artistId: string) {
     loading.update(() => true);
     getSpotifyArtist(artistId);
   }
-
-
 </script>
 
 <div class="space-y-10 w-11/12 m-6 text-left flex flex-col grow items-center" use:loader={loading}>

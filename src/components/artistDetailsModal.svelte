@@ -1,7 +1,4 @@
 <script lang="ts">
-  // Props
-  /** Exposes parent props to this component. */
-
   // Stores
   import { getModalStore } from "@skeletonlabs/skeleton";
 
@@ -19,11 +16,7 @@
       [key: string]: string;
     };
   }
-
-  console.log(bodyData);
 </script>
-
-<!-- @component This example creates a simple form modal. -->
 
 {#if bodyData}
   <div class={cBase}>
