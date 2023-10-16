@@ -1,3 +1,7 @@
+// Package api
+// Description: This function is used to get the song recommendations from Spotify
+// Request Type: POST
+// Input: JSON {seed_artists: string, seed_genres: string, seed_tracks: string, etc.}
 package api
 
 import (

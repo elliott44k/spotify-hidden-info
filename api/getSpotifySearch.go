@@ -1,3 +1,7 @@
+// Package api
+// Description: This function is used to get search results from Spotify
+// Request Type: POST
+// Input: JSON {track_name: string, artist_name: string, type: string}
 package api
 
 import (

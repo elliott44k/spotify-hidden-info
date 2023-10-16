@@ -1,3 +1,7 @@
+// Package api
+// Description: This function is used to get song detailed audio analysis information from Spotify
+// Request Type: POST
+// Input: JSON {track_id: string}
 package api
 
 import (

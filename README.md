@@ -1,38 +1,16 @@
-# create-svelte
+# Spotify Hidden Info
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+This is a simple app that uses the Spotify API to get Spotify's song analysis as well as generate song recommendations based on user input. It uses the [Spotify](https://developer.spotify.com/) REST API and iFrame Embed.
 
-## Creating a project
+## Built with
+Svelte - Frontend framework
 
-If you're seeing this, you've probably already done this step. Congrats!
+Svelte Kit - Used for deploying to Vercel 
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+Go - Backend server technology deployed via Vercel Serverless Functions
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+Vercel - Hosting and deployment
 
-## Developing
+Redis - Holds Spotify API tokens
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+Spotify API

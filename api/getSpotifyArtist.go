@@ -1,3 +1,7 @@
+// Package api
+// Description: This function is used to get the artist information from Spotify
+// Request Type: POST
+// Input: JSON{artist_id: string}
 package api
 
 import (

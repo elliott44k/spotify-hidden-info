@@ -1,3 +1,6 @@
+// Package common
+// Path: api/common/spotifyAuth.go
+// Description: SpotifyAuth Struct allows for Spotify API Authorization
 package common
 
 import (
