@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 	"context"
-    "github.com/redis/go-redis/v9"
+	"github.com/redis/go-redis/v9"
 )
 
 type SpotifyAuth struct {
@@ -76,7 +76,7 @@ Get Redis Value
 */
 func (spot *SpotifyAuth) getRedis() string {
 //     opt, err := redis.ParseURL("redis://<user>:<pass>@localhost:6379/<db>")
-    opt, err := redis.ParseURL(os.Getenv("REDIS_URL")
+	opt, err := redis.ParseURL(os.Getenv("REDIS_URL"))
     if err != nil {
         panic(err)
     }
@@ -108,7 +108,7 @@ func (spot *SpotifyAuth) getRedis() string {
 }
 
 func (spot *SpotifyAuth) setRedis(value string) bool {
-    opt, err := redis.ParseURL(os.Getenv("REDIS_URL")
+	opt, err := redis.ParseURL(os.Getenv("REDIS_URL"))
     if err != nil {
         panic(err)
     }
@@ -117,7 +117,7 @@ func (spot *SpotifyAuth) setRedis(value string) bool {
 
     ctx := context.Background()
 
-    err := client.Set(ctx, "spotify_authorization", value, 3600).Err()
+    err = client.Set(ctx, "spotify_authorization", value, 3600).Err()
     if err == nil {
         return true
     }
