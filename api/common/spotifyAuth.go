@@ -90,18 +90,8 @@ func (spot *SpotifyAuth) getRedis() string {
 		panic(err)
 	}
 
-
-	client := redis.NewClient(opt)
-
-	ctx := context.Background()
-
-	val, err := client.Get(ctx, "spotify_authorization").Result()
-	if err != nil {
-		panic(err)
-	}
-
-	if val != "" {
-		return val
+	if result != "" {
+		return result
 	}
 
 	return ""
@@ -117,7 +107,7 @@ func (spot *SpotifyAuth) setRedis(value string) bool {
 		DB:       0,
 	})
 
-	err = rdb.Set(ctx, "spotify_authorization", value, 3600).Err()
+	err := rdb.Set(ctx, "spotify_authorization", value, 3600)
 	if err == nil {
 		return true
 	}
