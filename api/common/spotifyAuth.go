@@ -75,30 +75,30 @@ func (spot *SpotifyAuth) GetKey() bool {
 Get Redis Value
 */
 func (spot *SpotifyAuth) getRedis() string {
-//     opt, err := redis.ParseURL("redis://<user>:<pass>@localhost:6379/<db>")
-	opt, err := redis.ParseURL(os.Getenv("REDIS_URL"))
-    if err != nil {
-        panic(err)
-    }
+	ctx := context.Background()
 
-    client := redis.NewClient(opt)
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "redis-15401.c294.ap-northeast-1-2.ec2.redns.redis-cloud.com:15401",
+		Username: "default",
+		Password: os.Getenv("REDIS_DATABASE_PASSWORD"),
+		DB:       0,
+	})
 
-    ctx := context.Background()
+	result, err := rdb.Get(ctx, "spotify_authorization").Result()
 
-    val, err := client.Get(ctx, "spotify_authorization").Result()
-    if err != nil {
-        panic(err)
-    }
+	if err != nil {
+		panic(err)
+	}
 
-// 	type RedisResponse struct {
-// 		Result string `json:"result"`
-// 	}
-//
-// 	var jsonData RedisResponse
-// 	if err := json.Unmarshal(respData, &jsonData); err != nil { // Parse []byte to go struct pointer
-// 		fmt.Println("Error in JSON unmarshal 2")
-// 		return ""
-// 	}
+
+	client := redis.NewClient(opt)
+
+	ctx := context.Background()
+
+	val, err := client.Get(ctx, "spotify_authorization").Result()
+	if err != nil {
+		panic(err)
+	}
 
 	if val != "" {
 		return val
@@ -108,19 +108,19 @@ func (spot *SpotifyAuth) getRedis() string {
 }
 
 func (spot *SpotifyAuth) setRedis(value string) bool {
-	opt, err := redis.ParseURL(os.Getenv("REDIS_URL"))
-    if err != nil {
-        panic(err)
-    }
+	ctx := context.Background()
 
-    client := redis.NewClient(opt)
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "redis-15401.c294.ap-northeast-1-2.ec2.redns.redis-cloud.com:15401",
+		Username: "default",
+		Password: os.Getenv("REDIS_DATABASE_PASSWORD"),
+		DB:       0,
+	})
 
-    ctx := context.Background()
-
-    err = client.Set(ctx, "spotify_authorization", value, 3600).Err()
-    if err == nil {
-        return true
-    }
+	err = rdb.Set(ctx, "spotify_authorization", value, 3600).Err()
+	if err == nil {
+		return true
+	}
 
 	return false
 }
