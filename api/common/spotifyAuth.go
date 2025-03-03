@@ -13,6 +13,8 @@ import (
 	"os"
 	"strings"
 	"time"
+	"context"
+    "github.com/redis/go-redis/v9"
 )
 
 type SpotifyAuth struct {
@@ -73,62 +75,52 @@ func (spot *SpotifyAuth) GetKey() bool {
 Get Redis Value
 */
 func (spot *SpotifyAuth) getRedis() string {
-	client := http.Client{Timeout: 5 * time.Second}
+//     opt, err := redis.ParseURL("redis://<user>:<pass>@localhost:6379/<db>")
+    opt, err := redis.ParseURL(os.Getenv("REDIS_URL")
+    if err != nil {
+        panic(err)
+    }
 
-	req, err := http.NewRequest(http.MethodGet, os.Getenv("REDIS_REST_API_URL")+"/get/spotify_authorization", nil)
-	req.Header.Set("Authorization", "Bearer "+os.Getenv("REDIS_REST_API_TOKEN"))
+    client := redis.NewClient(opt)
 
-	resp, err := client.Do(req)
+    ctx := context.Background()
 
-	if err != nil {
-		log.Fatalln(err)
-	}
+    val, err := client.Get(ctx, "spotify_authorization").Result()
+    if err != nil {
+        panic(err)
+    }
 
-	respData, err := io.ReadAll(resp.Body)
+// 	type RedisResponse struct {
+// 		Result string `json:"result"`
+// 	}
+//
+// 	var jsonData RedisResponse
+// 	if err := json.Unmarshal(respData, &jsonData); err != nil { // Parse []byte to go struct pointer
+// 		fmt.Println("Error in JSON unmarshal 2")
+// 		return ""
+// 	}
 
-	type RedisResponse struct {
-		Result string `json:"result"`
-	}
-
-	var jsonData RedisResponse
-	if err := json.Unmarshal(respData, &jsonData); err != nil { // Parse []byte to go struct pointer
-		fmt.Println("Error in JSON unmarshal 2")
-		return ""
-	}
-
-	if jsonData.Result != "" {
-		return jsonData.Result
+	if val != "" {
+		return val
 	}
 
 	return ""
 }
 
 func (spot *SpotifyAuth) setRedis(value string) bool {
-	client := http.Client{Timeout: 5 * time.Second}
+    opt, err := redis.ParseURL(os.Getenv("REDIS_URL")
+    if err != nil {
+        panic(err)
+    }
 
-	req, err := http.NewRequest(http.MethodGet, os.Getenv("REDIS_REST_API_URL")+"/set/spotify_authorization/"+value+"/ex/3600", nil)
-	req.Header.Set("Authorization", "Bearer "+os.Getenv("REDIS_REST_API_TOKEN"))
+    client := redis.NewClient(opt)
 
-	resp, err := client.Do(req)
+    ctx := context.Background()
 
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	respData, err := io.ReadAll(resp.Body)
-
-	type RedisResponse struct {
-		Result string `json:"result"`
-	}
-
-	var jsonData RedisResponse
-	if err := json.Unmarshal(respData, &jsonData); err != nil { // Parse []byte to go struct pointer
-		fmt.Println("Error in JSON unmarshal 3")
-	}
-
-	if jsonData.Result != "OK" {
-		return true
-	}
+    err := client.Set(ctx, "spotify_authorization", value, 3600).Err()
+    if err == nil {
+        return true
+    }
 
 	return false
 }
