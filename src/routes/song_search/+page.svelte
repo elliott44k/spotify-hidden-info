@@ -74,16 +74,28 @@
 
   // spotify api call for track audio features
   async function getSpotifyTrackAudioFeatures(trackName: string, trackId: string) {
-    return await fetch(`${window.location.origin}/api/getSpotifyTrackAudioFeatures`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        "track_id": trackId
-      })
-    }).then(response => response.json()
-    ).then(data => {
+    try {
+      const response = await fetch(`${window.location.origin}/api/getSpotifyTrackAudioFeatures`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          "track_id": trackId
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Check if data is empty or missing expected fields
+      if (!data || Object.keys(data).length === 0 || !data.danceability) {
+        throw new Error("No audio features returned from Spotify");
+      }
+
       const trackAudioFeatures = {
         "danceability": Math.round(data.danceability * 10000) / 100,
         "energy": Math.round(data.energy * 10000) / 100,
@@ -99,14 +111,26 @@
         "duration": new Date(data.duration_ms).toISOString().slice(11, 19) + (" (hh:mm:ss)"),
         "time_signature": data.time_signature
       };
+
       const modal: ModalSettings = {
         type: "component",
         component: modalComponent,
         body: JSON.stringify({ trackName, trackId, trackAudioFeatures })
       };
-      loading.update(() => false);
       modalStore.trigger(modal);
-    });
+    } catch (error) {
+      // Handle the error by showing a fallback modal or message
+      const errorModal: ModalSettings = {
+        type: "alert",
+        title: "Audio Features Unavailable",
+        body: `Unable to retrieve audio features for "${trackName}". This feature might be unavailable or the API request failed. Error: ${error.message}`,
+        buttonTextCancel: "Close"
+      };
+      modalStore.trigger(errorModal);
+    } finally {
+      // Always reset loading state
+      loading.update(() => false);
+    }
   }
 
   // handle table row click

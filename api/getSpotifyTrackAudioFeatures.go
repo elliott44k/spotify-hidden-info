@@ -50,6 +50,7 @@ func GetSpotifyTrackAudioFeatures(w http.ResponseWriter, r *http.Request) {
 
 		//read response body, return
 		respBody, err := io.ReadAll(resp.Body)
+		fmt.Println(respBody)
 		w.Write(respBody)
 	} else {
 		fmt.Println("failed to retrieve spotify auth")
