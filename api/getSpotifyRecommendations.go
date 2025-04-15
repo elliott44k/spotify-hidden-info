@@ -15,7 +15,6 @@ import (
 )
 
 func GetSpotifyRecommendations(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("fuck")
 	var spotifyAuth common.SpotifyAuth
 
 	//get spotify auth key
